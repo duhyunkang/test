@@ -1,0 +1,46 @@
+import pandas as pd
+import numpy as np
+
+range = pd.date_range('2019-12-19', '2019-12-20', freq='2min')
+
+df = pd.DataFrame(index=range)[:20]
+
+np.random.seed(1004)
+df['price'] = np.random.randint(10, 100, size=20)
+df['amount'] = np.random.randint(1, 5, size=20)
+
+df
+
+
+
+range1 = pd.date_range('2019-12-19 00:00:00 ', '2019-12-19 00:38:00', freq='2min')
+
+df1 = pd.DataFrame(index=range1)
+
+np.random.seed(1004)
+df1['price'] = np.random.randint(10, 100, size=20)
+df1['amount'] = np.random.randint(1, 5, size=20)
+
+df1
+
+
+
+range1 = pd.date_range(end = '2019-12-19 00:38:00', periods = 20, freq='2min')
+
+df1 = pd.DataFrame(index=range1)
+
+np.random.seed(1004)
+df1['price'] = np.random.randint(10, 100, size=20)
+df1['amount'] = np.random.randint(1, 5, size=20)
+
+df1
+
+
+df_summary = pd.DataFrame()
+df_summary['price_10m_first'] = df.price.resample('10T').first()
+df_summary['price_10m_last'] = df.price.resample('10T').last()
+df_summary['amount_10m_first'] = df.amount.resample('10T').first()
+df_summary['amount_10m_last'] = df.amount.resample('10T').last()
+df_summary
+
+
