@@ -44,3 +44,68 @@ df_summary['amount_10m_last'] = df.amount.resample('10T').last()
 df_summary
 
 
+
+
+
+
+import pandas as pd
+import numpy as np
+import datetime
+
+# 이틀 기간으로 랜덤 데이터 만들고, 샘플링으로 써머리까지 만드는 함수
+
+def resampling(s, e):
+    range = pd.date_range(s, e, freq='1H')
+    df = pd.DataFrame(index=range)
+
+    np.random.seed()
+    df['price'] = np.random.randint(10, 100, size=df.shape[0])
+    df['amount'] = np.random.randint(1, 5, size=df.shape[0])
+    
+    df_summary = pd.DataFrame()
+    df_summary['price_10m_first'] = df['price'][:-1].resample('1D').first()
+    df_summary['price_10m_last'] = df['price'][:-1].resample('1D').last()
+    df_summary['amount_10m_first'] = df['amount'][:-1].resample('1D').first()
+    df_summary['amount_10m_last'] = df['amount'][:-1].resample('1D').last()
+    
+#     end_date = df_summary.index[-1].date()
+    
+    return df_summary
+
+# 기간을 입력하면 썸머리 파일을 합쳐서 df 만들어줌
+
+def resample_date(start, end): # 짝수 단위로만 입력 가능함. 홀수가 들어오면 어떻게??
+    df_new = pd.DataFrame()
+    format = '%Y-%m-%d'
+    start = datetime.datetime.strptime(start, format)
+    end = datetime.datetime.strptime(end, format)
+    periods = int((end - start).days/2) # 2는 한번에 출력할 데이터 일자 개수. 소수점 버리고
+    # 9/10 ~ 9/16 일때, periods는 3이므로
+    # day는 0, 1, 2 들어감.
+    # 나누고 싶은 구간은 9/10(start) ~ 9/12, 9/12 ~ 9/14, 9/14 ~ 9/16(end)
+    for day in range(periods):
+        # 9/10(start) ~ 9/12
+        s = start + datetime.timedelta(days = day * 2)
+        e = s + datetime.timedelta(days = 2)
+#         if day == 0:
+#             s = start
+#             e = start + datetime.timedelta(days = 2)
+#         # 9/14 ~ 9/16(end)
+#         elif day + 1 == periods:
+#             s = end - datetime.timedelta(days = 2)
+#             e = end
+#         # 9/12 ~ 9/14
+#         else:
+#             s = start + datetime.timedelta(days = day * 2)
+#             e = s + datetime.timedelta(days = 2)
+        # 위에서 만든 샘플링 함수 사용
+        data = resampling(s, e)
+        df_new = df_new.append(data)
+    return df_new
+
+resample_date('2021-09-10', '2021-09-17')
+
+
+
+date = df_summary1.index[0].date()
+print(date)
