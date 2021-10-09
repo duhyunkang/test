@@ -72,21 +72,25 @@ def resampling(s, e):
     
     return df_summary
 
-# 기간을 입력하면 썸머리 파일을 합쳐서 df 만들어줌
 
-def resample_date(start, end): # 짝수 단위로만 입력 가능함. 홀수가 들어오면 어떻게??
+# 기간을 입력하면 썸머리 파일을 합쳐서 df 만들어줌
+# 기간이 짝수, 홀수 관계없음
+
+def resample_date(start, end):
     df_new = pd.DataFrame()
     format = '%Y-%m-%d'
     start = datetime.datetime.strptime(start, format)
-    end = datetime.datetime.strptime(end, format)
+    end = datetime.datetime.strptime(end, format) + datetime.timedelta(days = 1)
     periods = int((end - start).days/2) # 2는 한번에 출력할 데이터 일자 개수. 소수점 버리고
     # 9/10 ~ 9/16 일때, periods는 3이므로
     # day는 0, 1, 2 들어감.
     # 나누고 싶은 구간은 9/10(start) ~ 9/12, 9/12 ~ 9/14, 9/14 ~ 9/16(end)
-    for day in range(periods):
+    for day in range(periods + 1):
         # 9/10(start) ~ 9/12
         s = start + datetime.timedelta(days = day * 2)
         e = s + datetime.timedelta(days = 2)
+        if e > end:
+            e = end
 #         if day == 0:
 #             s = start
 #             e = start + datetime.timedelta(days = 2)
@@ -102,6 +106,8 @@ def resample_date(start, end): # 짝수 단위로만 입력 가능함. 홀수가
         data = resampling(s, e)
         df_new = df_new.append(data)
     return df_new
+
+
 
 resample_date('2021-09-10', '2021-09-17')
 
